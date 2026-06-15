@@ -3,9 +3,12 @@ import pandas as pd
 
 st.title("📦 Inventory Management")
 
-medicine = st.text_input(
-    "Medicine Name"
-)
+if "inventory" not in st.session_state:
+    st.session_state.inventory = pd.DataFrame(
+        columns=["Medicine", "Stock", "Price"]
+    )
+
+medicine = st.text_input("Medicine Name")
 
 stock = st.number_input(
     "Stock",
@@ -18,29 +21,24 @@ price = st.number_input(
 )
 
 if st.button("Add Medicine"):
-    st.success(
-        f"{medicine} added successfully"
+
+    new_row = pd.DataFrame({
+        "Medicine": [medicine],
+        "Stock": [stock],
+        "Price": [price]
+    })
+
+    st.session_state.inventory = pd.concat(
+        [st.session_state.inventory, new_row],
+        ignore_index=True
     )
 
-sample_data = pd.DataFrame({
-    "Medicine":[
-        "Paracetamol",
-        "Dolo",
-        "Crocin"
-    ],
-    "Stock":[
-        100,
-        45,
-        20
-    ],
-    "Price":[
-        5,
-        8,
-        10
-    ]
-})
+    st.success("Medicine Added Successfully")
+
+st.subheader("Current Inventory")
 
 st.dataframe(
-    sample_data,
+    st.session_state.inventory,
     use_container_width=True
 )
+
